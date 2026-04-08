@@ -21,33 +21,6 @@ pipeline {
         }
 
         // --------------------------------------------------------------------
-        // STAGE: Snyk IaC Scan Test (CLI Method)
-        // --------------------------------------------------------------------
-        // Tests infrastructure code using Snyk CLI. 
-        // The || true ensures pipeline continues even if issues found.
-        // --------------------------------------------------------------------
-        stage('Snyk IaC Scan Test') {
-            steps {
-                withCredentials([string(credentialsId: 'snyk-api-token-string', variable: 'SNYK_TOKEN')]) {
-                    sh '''
-                        # Use pre-installed Snyk or install if needed
-                        if command -v snyk &> /dev/null; then
-                            SNYK_CMD="snyk"
-                        else
-                            SNYK_CMD="/var/lib/jenkins/tools/io.snyk.jenkins.tools.SnykInstallation/snyk/snyk-linux"
-                        fi
-                        
-                        # Authenticate
-                        $SNYK_CMD auth $SNYK_TOKEN
-                        
-                        # Run IaC test
-                        $SNYK_CMD iac test --org=$SNYK_ORG --severity-threshold=high || true
-                    '''
-                }
-            }
-        }
-
-        // --------------------------------------------------------------------
         // STAGE: Snyk IaC Scan Monitor (Plugin Method)
         // --------------------------------------------------------------------
         // Runs Snyk scan and reports results to Snyk platform.

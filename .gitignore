@@ -1,0 +1,46 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+*.terraform.lock.hcl.*
+.terraform.lock.hcl
+plan
+
+# Variables / secrets
+*.tfvars
+*.tfvars.json
+
+# Overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config
+.terraformrc
+terraform.rc
+
+# Logs
+crash.log
+crash.*.log
+
+# Keys / secrets
+*.pem
+!tests/event.json
+!tests/output.json
+
+# Artifacts
+*.rpm
+*.zip
+rpm_packages/
+
+# Python
+venv/
+
+# Project dirs
+backup/
+
+# Rendered templates
+rendered/*
+!rendered/.gitkeep

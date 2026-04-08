@@ -1,0 +1,13 @@
+# ----------------------------------------------------------------
+# BACKEND — Terraform Backend Configuration (S3)
+# ----------------------------------------------------------------
+# Uses platform-managed bootstrap infrastructure (S3 backend and lockfile).
+
+terraform {
+  backend "s3" {
+    bucket       = "kirkdevsecops-terraform-state"
+    key          = "jenkins/dev/jenkins_snyk_scan/terraform.tfstate"
+    region       = "us-west-2"
+    encrypt      = true
+  }
+}

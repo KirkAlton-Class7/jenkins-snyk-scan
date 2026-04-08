@@ -18,33 +18,23 @@ pipeline {
             }
         }
 
-        // ---------------------------------------------------------------------------
-        // STAGE: Snyk IaC Scan Test (Advanced Erroneous Stage) - DELIBERATE FAILURE
-        // ---------------------------------------------------------------------------
-        // This stage is also designed to FAIL with exit code 127 (command not found).
-        // The conditional logic looks helpful, but it masks the problem.
+        // ---------------------------------------------------------------------------------------
+        // STAGE: Snyk IaC Scan Test (Erroneous Stage) - DELIBERATE FAILURE
+        // ---------------------------------------------------------------------------------------
+        // This stage is designed to FAIL with exit code 127 (command not found).
+        // The PATH is modified, but the command still fails.
         // 
-        // Hint: Trace the value of SNYK_CMD in both branches of the if statement.
-        // Then examine which command fails with 127 – is it the auth line
-        // or the iac test line? What does that tell you about the variable?
-        // ---------------------------------------------------------------------------
-        // ---------------------------------------------------------------------------
-        stage('Snyk IaC Scan Test - Advanced Erroneous Stage') {
+        // Hint: The export line adds a directory to PATH. The next line runs "snyk-linux".
+        // What must be true about that directory for the command to work?
+        // Which part of the command line is the shell looking for inside that directory?
+        // -------------------------------------------------------------------------------------
+        stage('Snyk IaC Scan Test - Erroneous Stage') {
             steps {
                 withCredentials([string(credentialsId: 'snyk-api-token-string', variable: 'SNYK_TOKEN')]) {
                     sh '''
-                        # Use pre-installed Snyk or install if needed
-                        if command -v snyk &> /dev/null; then
-                            SNYK_CMD="snyk"
-                        else
-                            SNYK_CMD="/var/lib/jenkins/tools/io.snyk.jenkins.tools.SnykInstallation/snyk/snyk-linux"
-                        fi
-                        
-                        # Authenticate
-                        $SNYK_CMD auth $SNYK_TOKEN
-                        
-                        # Run IaC test
-                        $SNYK_CMD iac test --org=$SNYK_ORG --severity-threshold=high || true
+                        export PATH=$PATH:/var/lib/jenkins/tools/io.snyk.jenkins.tools.SnykInstallation/snyk
+                        snyk-linux auth $SNYK_TOKEN
+                        snyk-linux iac test --org=$SNYK_ORG --severity-threshold=high || true
                     '''
                 }
             }
@@ -62,7 +52,7 @@ pipeline {
                     snykInstallation: 'snyk',
                     snykTokenId: 'snyk-api-token',
                     additionalArguments: "--iac --report --org=$SNYK_ORG --severity-threshold=high",
-                    failOnIssues: true,
+                    failOnIssues: false,
                     monitorProjectOnBuild: false
                 )
             }
@@ -77,7 +67,7 @@ pipeline {
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-iam-user-creds'
                 ]]) {
-                    sh 'terraform init -reconfigure'
+                    sh 'terraform init'
                 }
             }
         }

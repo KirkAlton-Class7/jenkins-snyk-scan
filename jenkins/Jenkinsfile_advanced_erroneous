@@ -77,7 +77,7 @@ pipeline {
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-iam-user-creds'
                 ]]) {
-                    sh 'terraform init -reconfigure'
+                    sh 'terraform init'
                 }
             }
         }
